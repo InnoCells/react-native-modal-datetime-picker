@@ -25,8 +25,6 @@ const deprecatedPropsInfo = [
 ];
 
 const unsopportedPropsInfo = [
-  { prop: "cancelTextStyle" },
-  { prop: "confirmTextStyle" },
   { prop: "datePickerModeAndroid" },
   { prop: "dismissOnBackdropPressIOS" },
   { prop: "hideTitleContainerIOS" },
@@ -52,7 +50,10 @@ export default class DateTimePickerModal extends React.PureComponent {
     onCancel: PropTypes.func.isRequired,
     onConfirm: PropTypes.func.isRequired,
     onChange: PropTypes.func,
-    onHide: PropTypes.func
+    onHide: PropTypes.func,
+    titleTextStyle: Text.propTypes.style,
+    cancelTextStyle: Text.propTypes.style,
+    confirmTextStyle: Text.propTypes.style
   };
 
   static defaultProps = {
@@ -157,6 +158,9 @@ export default class DateTimePickerModal extends React.PureComponent {
       onHide,
       onHideAfterConfirm, // Deprecated
       titleIOS, // Deprecated
+      titleTextStyle,
+      cancelTextStyle,
+      confirmTextStyle,
       ...otherProps
     } = this.props;
 
@@ -187,7 +191,7 @@ export default class DateTimePickerModal extends React.PureComponent {
             pickerContainerStyleIOS
           ]}
         >
-          <HeaderComponent label={titleIOS || headerTextIOS} />
+          <HeaderComponent label={titleIOS || headerTextIOS} textStyle={titleTextStyle} />
           <View onStartShouldSetResponderCapture={this.handleUserTouchInit}>
             <PickerComponent
               {...otherProps}
@@ -200,12 +204,14 @@ export default class DateTimePickerModal extends React.PureComponent {
             isDisabled={this.state.isPickerSpinning}
             onPress={this.handleConfirm}
             label={confirmTextIOS}
+            textStyle={confirmTextStyle}
           />
         </View>
         <CancelButtonComponent
           isDarkModeEnabled={isDarkModeEnabled}
           onPress={this.handleCancel}
           label={cancelTextIOS}
+          textStyle={cancelTextStyle}
         />
       </Modal>
     );
@@ -230,10 +236,10 @@ const pickerStyles = StyleSheet.create({
   }
 });
 
-export const Header = ({ label }) => {
+export const Header = ({ label, textStyle }) => {
   return (
     <View style={headerStyles.root}>
-      <Text style={headerStyles.text}>{label}</Text>
+      <Text style={[headerStyles.text, textStyle]}>{label}</Text>
     </View>
   );
 };
@@ -256,7 +262,8 @@ export const ConfirmButton = ({
   isDarkModeEnabled,
   isDisabled,
   onPress,
-  label
+  label,
+  textStyle
 }) => {
   const underlayColor = isDarkModeEnabled
     ? HIGHLIGHT_COLOR_DARK
@@ -268,7 +275,7 @@ export const ConfirmButton = ({
       onPress={onPress}
       disabled={isDisabled}
     >
-      <Text style={confirmButtonStyles.text}>{label}</Text>
+      <Text style={[confirmButtonStyles.text, textStyle]}>{label}</Text>
     </TouchableHighlight>
   );
 };
@@ -290,7 +297,7 @@ const confirmButtonStyles = StyleSheet.create({
   }
 });
 
-export const CancelButton = ({ isDarkModeEnabled, onPress, label }) => {
+export const CancelButton = ({ isDarkModeEnabled, onPress, label, textStyle }) => {
   const themedButtonStyle = isDarkModeEnabled
     ? cancelButtonStyles.buttonDark
     : cancelButtonStyles.buttonLight;
@@ -303,7 +310,7 @@ export const CancelButton = ({ isDarkModeEnabled, onPress, label }) => {
       underlayColor={underlayColor}
       onPress={onPress}
     >
-      <Text style={cancelButtonStyles.text}>{label}</Text>
+      <Text style={[cancelButtonStyles.text, textStyle]}>{label}</Text>
     </TouchableHighlight>
   );
 };
